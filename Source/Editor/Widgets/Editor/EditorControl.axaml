@@ -1,0 +1,83 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="using:Editor.Widgets.Editor"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:shapes="using:Editor.Entities.Shape.Models"
+             xmlns:shared="using:Editor.Shared"
+             xmlns:system="using:System"
+             xmlns:vm="using:Editor.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Editor.EditorControl"
+             x:DataType="vm:EditorViewModel"
+                 Focusable="True"
+    KeyDown="OnKeyDown">
+
+
+      <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal"
+                    Width="0"
+            HorizontalAlignment="Left"
+            Spacing="10"
+            Margin="14,6">
+    <Button Content="Oval"
+            Command="{Binding ChangeModCommand}"
+            CommandParameter="{x:Static shared:ShapeType.Oval}" />
+    <Button Content="Bezier Curve" 
+            Command="{Binding ChangeModCommand}"
+            CommandParameter="{x:Static shared:ShapeType.BezierCurve}" />
+    <Button Content="↖"
+            Command="{Binding ChangeModCommand}"
+            CommandParameter="{x:Static shared:ShapeType.None}" />
+    <Button Content="Clear All"
+            Command="{Binding ClearAllCommand}"
+            CommandParameter="{x:Static shared:ShapeType.None}" />    
+    <Button Content="💾"
+            Command="{Binding SaveShapesCommand}" />
+    <Button Content="⬇️" Command="{Binding LoadShapesCommand}"/>
+        <Label Content="{Binding Shapes.Count}" VerticalAlignment="Center"/>
+        <Label Content="{Binding StatusMessage}" VerticalAlignment="Center"/>
+        </StackPanel>
+        <Border Grid.Row="1" 
+                Background="Transparent"
+                PointerPressed="OnCanvasPointerPressed"
+                PointerMoved="OnCanvasPointerMoved"
+                PointerReleased="OnCanvasPointerReleased">
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Shapes}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <Canvas Background="Silver" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+            <ItemsControl.Styles>
+                <Style Selector="ItemsControl > ContentPresenter" x:DataType="shapes:EditorShape">
+                    <Setter Property="Canvas.Left" Value="{Binding X}" />
+                    <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                </Style>
+            </ItemsControl.Styles>
+          <ItemsControl.DataTemplates>
+
+                <DataTemplate DataType="shapes:OvalShape">
+                    <Ellipse Width="{Binding Width}"
+                             Height="{Binding Height}"
+                             Stroke="Black">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="black" />
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </DataTemplate>
+
+                <DataTemplate DataType="shapes:BezCurShape">
+                    <Path Stroke="Black" StrokeThickness="2"
+                          Data="{Binding Points, Converter={x:Static local:PointsToGeometryConverter.Instance}}"/>
+                </DataTemplate>
+
+            </ItemsControl.DataTemplates>
+        </ItemsControl>
+         </Border>
+    </Grid>
+</UserControl>
